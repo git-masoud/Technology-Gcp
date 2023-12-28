@@ -7,11 +7,11 @@ This module contains a Data Plane extension to copy data to and from Google clou
 ### Authentication
 Google storage data plane supports three different approaches for authentication:
 * Default authentication:
-    * Authenticates against the Google Cloud API using the [Application Default Credentials](https://cloud.google.com/docs/authentication#adc).
+    * Authenticates against the Google Cloud API using the [Application Default Credentials](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys).
     * These will automatically be provided if the connector is deployed with the correct service account attached.
 * Service Account key file
     * Authentication using a Service Account key file exported from Google Cloud Platform
-    * Service Account key file can be stored in a vault or encoded as base64 and provided in the dataAddress.
+    * Service Account key file can be stored in a vault or encoded as base64 and provided in the dataAddress, or you can use a local service account key file and provide the path as configuration at connector level as 'edc.gcp.saccount.file'
 
 
 ### Data source properties

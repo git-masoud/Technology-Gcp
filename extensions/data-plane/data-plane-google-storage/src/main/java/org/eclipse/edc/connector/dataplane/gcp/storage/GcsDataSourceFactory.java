@@ -61,10 +61,9 @@ public class GcsDataSourceFactory implements DataSourceFactory {
 
 
         var source = request.getSourceDataAddress();
-        var tokenKeyName = source.getKeyName();
         var serviceAccountKeyName = source.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_NAME);
         var serviceAccountValue = source.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_VALUE);
-        var gcpServiceAccountCredentials = new GcpServiceAccountCredentials(tokenKeyName, serviceAccountKeyName, serviceAccountValue);
+        var gcpServiceAccountCredentials = new GcpServiceAccountCredentials(source.getKeyName(), serviceAccountKeyName, serviceAccountValue);
         var googleCredentials = gcpCredential.resolveGoogleCredentialsFromDataAddress(gcpServiceAccountCredentials);
         var storageClient = StorageOptions.newBuilder()
                 .setCredentials(googleCredentials)

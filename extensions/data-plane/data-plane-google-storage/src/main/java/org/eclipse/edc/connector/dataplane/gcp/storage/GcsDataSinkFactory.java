@@ -71,10 +71,9 @@ public class GcsDataSinkFactory implements DataSinkFactory {
         }
 
         var destination = request.getDestinationDataAddress();
-        var tokenKeyName = destination.getKeyName();
         var serviceAccountKeyName = destination.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_NAME);
         var serviceAccountValue = destination.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_VALUE);
-        var gcpServiceAccountCredentials = new GcpServiceAccountCredentials(tokenKeyName, serviceAccountKeyName, serviceAccountValue);
+        var gcpServiceAccountCredentials = new GcpServiceAccountCredentials(destination.getKeyName(), serviceAccountKeyName, serviceAccountValue);
         var googleCredentials = gcpCredential.resolveGoogleCredentialsFromDataAddress(gcpServiceAccountCredentials);
         var storageClient = StorageOptions.newBuilder()
                 .setCredentials(googleCredentials)
