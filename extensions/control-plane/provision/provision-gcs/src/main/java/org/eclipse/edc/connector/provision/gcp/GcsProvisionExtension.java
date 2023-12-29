@@ -19,11 +19,14 @@ import com.google.cloud.storage.StorageOptions;
 import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
 import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
 import org.eclipse.edc.gcp.common.GcpConfiguration;
+import org.eclipse.edc.gcp.common.GcpCredentials;
 import org.eclipse.edc.gcp.iam.IamService;
-import org.eclipse.edc.gcp.storage.StorageServiceImpl;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 
 
 public class GcsProvisionExtension implements ServiceExtension {
@@ -38,19 +41,31 @@ public class GcsProvisionExtension implements ServiceExtension {
         return "GCP storage provisioner";
     }
 
+
+    @Setting(value = "The GCP project ID")
+    private static final String GCP_PROJECT_ID = "edc.gcp.project.id";
+
     @Inject
     private IamService iamService;
 
     @Inject
     private GcpConfiguration gcpConfiguration;
 
+
+    @Inject
+    private Vault vault;
+
+
+    @Inject
+    private TypeManager typeManager;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
-        var storageClient = createDefaultStorageClient(gcpConfiguration.getProjectId());
-        var storageService = new StorageServiceImpl(storageClient, monitor);
 
-        var provisioner = new GcsProvisioner(monitor, storageService, iamService);
+        var gcpCredential = new GcpCredentials(vault, typeManager, monitor);
+
+        var provisioner = new GcsProvisioner(monitor, gcpCredential, gcpConfiguration.getProjectId());
         provisionManager.register(provisioner);
 
         manifestGenerator.registerGenerator(new GcsConsumerResourceDefinitionGenerator());

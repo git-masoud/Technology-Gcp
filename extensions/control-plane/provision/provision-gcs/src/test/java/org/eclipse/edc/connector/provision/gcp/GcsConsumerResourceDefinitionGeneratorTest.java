@@ -29,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class GcsConsumerResourceDefinitionGeneratorTest {
-
     private GcsConsumerResourceDefinitionGenerator generator;
 
     @BeforeEach
@@ -63,6 +62,18 @@ public class GcsConsumerResourceDefinitionGeneratorTest {
     }
 
     @Test
+    void generate_noPolicyAsParameter() {
+        var destination = DataAddress.Builder.newInstance().type(GcsStoreSchema.TYPE)
+                .property(GcsStoreSchema.LOCATION, "test-location")
+                .property(GcsStoreSchema.STORAGE_CLASS, "test-storage-class")
+                .build();
+        var asset = Asset.Builder.newInstance().build();
+        var dr = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> generator.generate(dr, null));
+    }
+
+    @Test
     void canGenerate() {
         var destination = DataAddress.Builder.newInstance().type(GcsStoreSchema.TYPE)
                 .property(GcsStoreSchema.STORAGE_CLASS, "test-storage-class")
@@ -87,5 +98,6 @@ public class GcsConsumerResourceDefinitionGeneratorTest {
         var definition = generator.canGenerate(dataRequest, policy);
         assertThat(definition).isFalse();
     }
+
 
 }

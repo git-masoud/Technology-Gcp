@@ -21,30 +21,61 @@ import java.util.Objects;
 public class GcsResourceDefinition extends ResourceDefinition {
 
     private String location;
-    private String storageClass;
+
+    private String projectId;
+
+
     private String bucketName;
 
+    private String storageClass;
+
+    private String serviceAccountKeyName;
+
+    private String serviceAccountKeyValue;
+
+    private String tokenKeyName;
+
     private GcsResourceDefinition() {
+    }
+
+    public String getServiceAccountKeyName() {
+        return serviceAccountKeyName;
+    }
+
+    public String getServiceAccountKeyValue() {
+        return serviceAccountKeyValue;
+    }
+
+    public String getTokenKeyName() {
+        return tokenKeyName;
     }
 
     public String getLocation() {
         return this.location;
     }
 
-    public String getStorageClass() {
-        return this.storageClass;
+    public String getProjectId() {
+        return this.projectId;
     }
+
 
     public String getBucketName() {
         return this.bucketName;
+    }
+
+    public String getStorageClass() {
+        return this.storageClass;
     }
 
     @Override
     public Builder toBuilder() {
         return initializeBuilder(new Builder())
                 .location(location)
+                .projectId(projectId)
                 .storageClass(storageClass)
-                .bucketName(bucketName);
+                .bucketName(bucketName)
+                .serviceAccountKeyName(serviceAccountKeyName)
+                .serviceAccountKeyValue(serviceAccountKeyValue);
     }
 
     public static class Builder extends ResourceDefinition.Builder<GcsResourceDefinition, Builder> {
@@ -57,13 +88,28 @@ public class GcsResourceDefinition extends ResourceDefinition {
             return new Builder();
         }
 
+        public Builder serviceAccountKeyName(String serviceAccountKeyName) {
+            resourceDefinition.serviceAccountKeyName = serviceAccountKeyName;
+            return this;
+        }
+
+        public Builder serviceAccountKeyValue(String serviceAccountKeyValue) {
+            resourceDefinition.serviceAccountKeyValue = serviceAccountKeyValue;
+            return this;
+        }
+
+        public Builder tokenKeyName(String tokenKeyName) {
+            resourceDefinition.tokenKeyName = tokenKeyName;
+            return this;
+        }
+
         public Builder location(String location) {
             resourceDefinition.location = location;
             return this;
         }
 
-        public Builder storageClass(String storageClass) {
-            resourceDefinition.storageClass = storageClass;
+        public Builder projectId(String projectId) {
+            resourceDefinition.projectId = projectId;
             return this;
         }
 
@@ -72,13 +118,17 @@ public class GcsResourceDefinition extends ResourceDefinition {
             return this;
         }
 
+        public Builder storageClass(String storageClass) {
+            resourceDefinition.storageClass = storageClass;
+            return this;
+        }
+
         @Override
         protected void verify() {
             super.verify();
-            // Bucket name is not required: if not present, provisioner generates a new one
-            // using the transfer id.
             Objects.requireNonNull(resourceDefinition.location, "location");
             Objects.requireNonNull(resourceDefinition.storageClass, "storageClass");
         }
+
     }
 }

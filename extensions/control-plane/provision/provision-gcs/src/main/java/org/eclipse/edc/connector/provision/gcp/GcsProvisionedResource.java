@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedDataDestinationResource;
 import org.eclipse.edc.gcp.storage.GcsStoreSchema;
 
+import static org.eclipse.edc.gcp.common.GcpConfiguration.PROJECT_ID;
 import static org.eclipse.edc.gcp.storage.GcsStoreSchema.BUCKET_NAME;
 import static org.eclipse.edc.gcp.storage.GcsStoreSchema.LOCATION;
 import static org.eclipse.edc.gcp.storage.GcsStoreSchema.SERVICE_ACCOUNT_EMAIL;
@@ -31,7 +32,6 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 @JsonDeserialize(builder = GcsProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:gcsgrovisionedresource")
 public class GcsProvisionedResource extends ProvisionedDataDestinationResource {
-
     private GcsProvisionedResource() {
     }
 
@@ -41,6 +41,10 @@ public class GcsProvisionedResource extends ProvisionedDataDestinationResource {
 
     public String getLocation() {
         return getDataAddress().getStringProperty(LOCATION);
+    }
+
+    public String getProjectId() {
+        return getDataAddress().getStringProperty(PROJECT_ID);
     }
 
     public String getStorageClass() {
@@ -76,6 +80,11 @@ public class GcsProvisionedResource extends ProvisionedDataDestinationResource {
 
         public GcsProvisionedResource.Builder location(String location) {
             dataAddressBuilder.property(EDC_NAMESPACE + LOCATION, location);
+            return this;
+        }
+
+        public GcsProvisionedResource.Builder projectId(String projectId) {
+            this.dataAddressBuilder.property(PROJECT_ID, projectId);
             return this;
         }
 

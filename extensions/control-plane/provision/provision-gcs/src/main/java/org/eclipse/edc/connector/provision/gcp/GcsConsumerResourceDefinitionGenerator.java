@@ -23,25 +23,44 @@ import org.eclipse.edc.gcp.storage.GcsStoreSchema;
 import org.eclipse.edc.policy.model.Policy;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static java.util.UUID.randomUUID;
 
 public class GcsConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
 
+
     @Override
     public @Nullable
     ResourceDefinition generate(DataRequest dataRequest, Policy policy) {
+        Objects.requireNonNull(dataRequest, "dataRequest must always be provided");
+        Objects.requireNonNull(policy, "policy must always be provided");
+
         var destination = dataRequest.getDataDestination();
         var id = randomUUID().toString();
         var location = destination.getStringProperty(GcsStoreSchema.LOCATION);
         var storageClass = destination.getStringProperty(GcsStoreSchema.STORAGE_CLASS);
+        var projectId = destination.getStringProperty(GcsStoreSchema.PROJECT_ID);
         var bucketName = destination.getStringProperty(GcsStoreSchema.BUCKET_NAME);
+        var tokenKeyName = destination.getKeyName();
+        var serviceAccountKeyName = destination.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_NAME);
+        var serviceAccountKeyValue = destination.getStringProperty(GcsStoreSchema.SERVICE_ACCOUNT_KEY_VALUE);
 
         return GcsResourceDefinition.Builder.newInstance().id(id).location(location)
-                .storageClass(storageClass).bucketName(bucketName).build();
+                .storageClass(storageClass)
+                .projectId(projectId)
+                .bucketName(bucketName)
+                .tokenKeyName(tokenKeyName)
+                .serviceAccountKeyName(serviceAccountKeyName)
+                .serviceAccountKeyValue(serviceAccountKeyValue)
+                .build();
     }
 
     @Override
     public boolean canGenerate(DataRequest dataRequest, Policy policy) {
+        Objects.requireNonNull(dataRequest, "dataRequest must always be provided");
+        Objects.requireNonNull(policy, "policy must always be provided");
+
         return GcsStoreSchema.TYPE.equals(dataRequest.getDestinationType());
     }
 }
